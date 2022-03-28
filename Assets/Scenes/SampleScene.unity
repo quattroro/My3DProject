@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 118424306}
   - component: {fileID: 118424305}
   - component: {fileID: 118424304}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -603,19 +603,27 @@ MonoBehaviour:
   FpCamRig: {fileID: 2098036120}
   FpCam: {fileID: 172402120}
   CharacterRig: {fileID: 963877315}
-  CapsuleCol: {fileID: 0}
-  IsCursorActive: 0
-  IsFPP: 0
+  CapsuleCol: {fileID: 963877316}
   MouseMove: {x: 0, y: 0}
   MoveDir: {x: 0, y: 0, z: 0}
   WorldMove: {x: 0, y: 0, z: 0}
+  IsCursorActive: 0
+  IsFPP: 0
   IsMoving: 0
+  IsGrounded: 0
+  IsJumping: 0
+  IsFalling: 0
   CurGravity: 0
-  MouseSpeed: 10
+  RotMouseSpeed: 10
+  MoveSpeed: 5
   MinAngle: 0
   MaxAngle: 0
-  Gravity: 0
-  JumpPower: 0
+  Gravity: 0.2
+  JumpPower: 2
+  JumpcoolTime: 0.3
+  GroundMask:
+    serializedVersion: 2
+    m_Bits: 64
   updown: {x: 0, y: 0, z: 0}
   xnext: 0
   rightleft: {x: 0, y: 0, z: 0}

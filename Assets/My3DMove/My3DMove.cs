@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class My3DMove : MonoBehaviour
 {
-    [Header("components")]
+    [Header("============components============")]
     public Transform CharacterRoot = null;
 
     public Transform TpCamRig = null;
@@ -19,11 +19,7 @@ public class My3DMove : MonoBehaviour
     public CapsuleCollider CapsuleCol = null;
 
 
-    [Header("Now Values")]
-
-    public bool IsCursorActive = false;
-
-    public bool IsFPP = false;
+    [Header("============Now Values============")]
 
     public Vector2 MouseMove = Vector2.zero;
 
@@ -31,15 +27,27 @@ public class My3DMove : MonoBehaviour
 
     public Vector3 WorldMove = Vector3.zero;
 
+    public bool IsCursorActive = false;
+
+    public bool IsFPP = true;
+
     public bool IsMoving = false;
 
     public bool IsGrounded = false;
 
+    public bool IsJumping = false;
+
+    public bool IsFalling = false;
+
     public float CurGravity;//현재 벨로시티의 y값
 
-    [Header("Options")]
+    private float LastJump;
 
-    public float MouseSpeed = 10f;
+    [Header("============Options============")]
+
+    public float RotMouseSpeed = 10f;
+
+    public float MoveSpeed;
 
     public float MinAngle;
 
@@ -47,9 +55,13 @@ public class My3DMove : MonoBehaviour
 
     public float Gravity;//중력값(프레임단위로 증가시켜줄 값)
 
-    public float JumpPower;//점프를 하면 해당 값으로 curgravity값을 바꿔준다.
+    public float JumpPower = 120;//점프를 하면 해당 값으로 curgravity값을 바꿔준다.
 
-    [Header("TestVals")]
+    public float JumpcoolTime = 1f;
+
+    public LayerMask GroundMask;
+
+    [Header("============TestVals============")]
 
     public Vector3 updown;
     public float xnext;
@@ -71,6 +83,11 @@ public class My3DMove : MonoBehaviour
             ShowCursorToggle();
         }
 
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump();
+        }
+
         if (Input.GetKey(KeyCode.W)) v+=1.0f;
         if (Input.GetKey(KeyCode.S)) v-=1.0f;
         if (Input.GetKey(KeyCode.A)) h-=1.0f;
@@ -88,10 +105,14 @@ public class My3DMove : MonoBehaviour
 
         MoveDir.Normalize();
 
-        WorldMove = FpRoot.TransformDirection(MoveDir);
-        WorldMove *= 10f;
+        if (IsFPP)
+            WorldMove = FpRoot.TransformDirection(MoveDir);
+        else
+            WorldMove = TpCamRig.TransformDirection(MoveDir);
 
-        CharacterRig.velocity = new Vector3(WorldMove.x, CharacterRig.velocity.y, WorldMove.z);
+        WorldMove *= MoveSpeed;
+
+        CharacterRig.velocity = new Vector3(WorldMove.x, CurGravity, WorldMove.z);
     }
 
     private void ShowCursorToggle()
@@ -113,16 +134,39 @@ public class My3DMove : MonoBehaviour
 
     public void CheckGround()
     {
-
+        IsGrounded = false;
+        if(Time.time>=LastJump+0.2f)
+        {
+            RaycastHit hit;
+            bool cast = Physics.SphereCast(CapsuleCol.transform.position, CapsuleCol.radius - 0.2f, Vector3.down, out hit, 0.1f, GroundMask);
+            if (cast)
+            {
+                IsGrounded = true;
+            }
+        }
     }
 
     public void Falling()
     {
-        
+        float deltacof = Time.deltaTime * 10f;
+        if(IsGrounded)
+        {
+            CurGravity = 0;
+        }
+        else
+        {
+            CurGravity -= deltacof * Gravity;
+        }
     }
 
     public void Jump()
     {
+        if(Time.time>=LastJump+JumpcoolTime)
+        {
+            LastJump = Time.time;
+            IsJumping = true;
+            CurGravity = JumpPower;
+        }
         
     }
 
@@ -149,13 +193,13 @@ public class My3DMove : MonoBehaviour
     public void RotateFP()
     {
         float xRotPrev = FpRoot.localEulerAngles.y;
-        float xRotNext = xRotPrev + MouseMove.x * Time.deltaTime * 50f * MouseSpeed;
+        float xRotNext = xRotPrev + MouseMove.x * Time.deltaTime * 50f * RotMouseSpeed;
         xnext = xRotNext;
         //if (xRotNext > 180f)
         //    xRotNext -= 360f;
 
         float yRotPrev = FpCamRig.localEulerAngles.x;
-        float yRotNext = yRotPrev + MouseMove.y * Time.deltaTime * 50f * MouseSpeed;
+        float yRotNext = yRotPrev + MouseMove.y * Time.deltaTime * 50f * RotMouseSpeed;
         ynext = yRotNext;
 
 
@@ -171,13 +215,13 @@ public class My3DMove : MonoBehaviour
     public void RotateTP()
     {
         float xRotPrev = TpCamRig.localEulerAngles.y;
-        float xRotNext = xRotPrev + MouseMove.x * Time.deltaTime * 50f * MouseSpeed;
+        float xRotNext = xRotPrev + MouseMove.x * Time.deltaTime * 50f * RotMouseSpeed;
         
         //if (xRotNext > 180f)
         //    xRotNext -= 360f;
 
         float yRotPrev = TpCamRig.localEulerAngles.x;
-        float yRotNext = yRotPrev + MouseMove.y * Time.deltaTime * 50f * MouseSpeed;
+        float yRotNext = yRotPrev + MouseMove.y * Time.deltaTime * 50f * RotMouseSpeed;
 
 
 
@@ -230,7 +274,14 @@ public class My3DMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Falling();
         KeyInput();
+
+        CheckGround();
+        CheckFront();
+
+        
+
         Rotation();
         Move();
     }
