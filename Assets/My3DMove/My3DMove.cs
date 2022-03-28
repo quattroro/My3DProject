@@ -33,7 +33,9 @@ public class My3DMove : MonoBehaviour
 
     public bool IsMoving = false;
 
-    public float CurGravity;
+    public bool IsGrounded = false;
+
+    public float CurGravity;//현재 벨로시티의 y값
 
     [Header("Options")]
 
@@ -43,7 +45,9 @@ public class My3DMove : MonoBehaviour
 
     public float MaxAngle;
 
-    public float Gravity;
+    public float Gravity;//중력값(프레임단위로 증가시켜줄 값)
+
+    public float JumpPower;//점프를 하면 해당 값으로 curgravity값을 바꿔준다.
 
     [Header("TestVals")]
 
@@ -101,6 +105,27 @@ public class My3DMove : MonoBehaviour
         Cursor.visible = value;
         Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;
     }
+
+    public void CheckFront()
+    {
+
+    }
+
+    public void CheckGround()
+    {
+
+    }
+
+    public void Falling()
+    {
+        
+    }
+
+    public void Jump()
+    {
+        
+    }
+
 
     public void Rotation()
     {
