@@ -39,11 +39,24 @@ public class My3DMove : MonoBehaviour
 
     public bool IsFalling = false;
 
+    public bool IsSlip = false;
+
     public float CurGravity;//현재 벨로시티의 y값
 
     private float LastJump;
 
-    public float GroundSlopAngle;
+    public float CurGroundSlopAngle;
+
+    public float CurFowardSlopAngle;
+
+    public Vector3 CurGroundNomal;
+
+    //public Vector3 Capsuletopcenter = Vector3.zero;
+
+    //public Vector3 Capsulebottomcenter = Vector3.zero;
+
+    public Vector3 Capsuletopcenter => new Vector3(transform.position.x, transform.position.y + CapsuleCol.height - CapsuleCol.radius, transform.position.z);
+    public Vector3 Capsulebottomcenter => new Vector3(transform.position.x, transform.position.y + CapsuleCol.radius, transform.position.z);
 
     [Header("============Options============")]
 
@@ -65,7 +78,6 @@ public class My3DMove : MonoBehaviour
 
     public float MaxSlop = 70;
 
-    
 
     [Header("============TestVals============")]
 
@@ -138,22 +150,51 @@ public class My3DMove : MonoBehaviour
     public void CheckFront()
     {
         RaycastHit hit;
-        //bool cast = Physics.CapsuleCast()
+        CurFowardSlopAngle = 0;
+        bool cast = Physics.CapsuleCast(Capsuletopcenter, Capsulebottomcenter, CapsuleCol.radius, WorldMove + Vector3.down, out hit, 5.0f,  GroundMask);
+        if(cast)
+        {
+            CurFowardSlopAngle = Vector3.Angle(hit.normal, Vector3.up);
+
+
+
+        }
+        
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(Capsuletopcenter, CapsuleCol.radius);
+        Gizmos.DrawWireSphere(Capsulebottomcenter, CapsuleCol.radius);
 
+        if (CurFowardSlopAngle!=0)
+        {
 
+        }
+    }
 
     public void CheckGround()
     {
         IsGrounded = false;
+        IsSlip = false;
+        CurGroundSlopAngle = 0;
         if(Time.time>=LastJump+0.2f)//점프하고 0.2초 동안은 지면검사를 하지 않는다.
         {
             RaycastHit hit;
-            bool cast = Physics.SphereCast(CapsuleCol.transform.position, CapsuleCol.radius - 0.2f, Vector3.down, out hit, 0.1f, GroundMask);
+            bool cast = Physics.SphereCast(CapsuleCol.transform.position, CapsuleCol.radius - 0.2f, Vector3.down, out hit, 0.2f, GroundMask);
             if (cast)
             {
                 IsGrounded = true;
+                CurGroundSlopAngle = Vector3.Angle(hit.normal, Vector3.up);
+                if(CurGroundSlopAngle>=MaxSlop)
+                {
+                    IsSlip = true;
+                }
             }
         }
     }
@@ -275,6 +316,8 @@ public class My3DMove : MonoBehaviour
     {
         ChaingePerspective();
         ShowCursor(false);
+        
+
     }
 
     // Start is called before the first frame update

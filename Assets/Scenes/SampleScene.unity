@@ -614,6 +614,10 @@ MonoBehaviour:
   IsJumping: 0
   IsFalling: 0
   CurGravity: 0
+  CurGroundSlopAngle: 0
+  CurFowardSlopAngle: 0
+  Capsuletopcenter: {x: 0, y: 0, z: 0}
+  Capsulebottomcenter: {x: 0, y: 0, z: 0}
   RotMouseSpeed: 10
   MoveSpeed: 5
   MinAngle: 0
@@ -624,6 +628,7 @@ MonoBehaviour:
   GroundMask:
     serializedVersion: 2
     m_Bits: 64
+  MaxSlop: 70
   updown: {x: 0, y: 0, z: 0}
   xnext: 0
   rightleft: {x: 0, y: 0, z: 0}
@@ -670,7 +675,7 @@ GameObject:
   - component: {fileID: 1110805423}
   - component: {fileID: 1110805422}
   - component: {fileID: 1110805421}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
