@@ -43,6 +43,8 @@ public class My3DMove : MonoBehaviour
 
     private float LastJump;
 
+    public float GroundSlopAngle;
+
     [Header("============Options============")]
 
     public float RotMouseSpeed = 10f;
@@ -60,6 +62,10 @@ public class My3DMove : MonoBehaviour
     public float JumpcoolTime = 1f;
 
     public LayerMask GroundMask;
+
+    public float MaxSlop = 70;
+
+    
 
     [Header("============TestVals============")]
 
@@ -127,15 +133,21 @@ public class My3DMove : MonoBehaviour
         Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
+
+
     public void CheckFront()
     {
-
+        RaycastHit hit;
+        //bool cast = Physics.CapsuleCast()
     }
+
+
+
 
     public void CheckGround()
     {
         IsGrounded = false;
-        if(Time.time>=LastJump+0.2f)
+        if(Time.time>=LastJump+0.2f)//점프하고 0.2초 동안은 지면검사를 하지 않는다.
         {
             RaycastHit hit;
             bool cast = Physics.SphereCast(CapsuleCol.transform.position, CapsuleCol.radius - 0.2f, Vector3.down, out hit, 0.1f, GroundMask);
